@@ -1,0 +1,9 @@
+[submodule "submodules/mlohmann_json"]
+	path = submodules/mlohmann_json
+	url = https://github.com/nlohmann/json.git
+[submodule "submodules/ctre"]
+	path = submodules/ctre
+	url = https://github.com/hanickadot/compile-time-regular-expressions.git
+[submodule "submodules/cmake-build-sys-utilities"]
+	path = submodules/cmake-build-sys-utilities
+	url = https://github.com/skymage23/cmake-build-sys-utilities.git
