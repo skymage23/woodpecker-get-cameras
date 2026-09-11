@@ -28,29 +28,78 @@
 
 class Device {
     private:
-    SP_DEVICE_INTERFACE_DATA* interface_data;
-    bool interface_data_set;
+    HDEVINFO set;
+    SP_DEVICE_INTERFACE_DATA interface_data;
 
-    DEVINST* device_instance;
-    bool device_instance_set;
+    const DEVINST* device_instance;
 
     
-    wchar_t* instance_path;
-    ULONG instance_path_size;
-    bool instance_path_set;
+    const wchar_t* instance_path;
+    const ULONG instance_path_size;
+
+    private:
+    void __set_interface_path(){
+        DWORD buff_size = 0;
+        ULONG winapi_error;
+        //Prelim to get the buff size;
+        bool success = SetupDiGetDeviceInterfaceDetailW(
+            this -> set,
+            &(this -> interface_data),
+            nullptr,
+            0,
+            &buff_size,
+            nullptr
+        );
+        winapi_error = GetLastError();
+        if(!success && (winapi_error != ERROR_INSUFFICIENT_BUFFER)){
+            std::vector<std::string> supp_err_strings = {
+                std::format("GetLastError result: {}", winapi_error)
+            };
+
+            return {
+                Error(
+                    ERR_HANDLING_FAILED_GET_DEV_IFACE_INFO,
+                    std::make_unique<std::vector<std::string>>(std::move(supp_err_strings))
+                ),
+                nullptr
+            };
+        }
+
+        std::vector<BYTE> buff(buff_size);
+        ZeroMemory(buff.data(), buff_size);
+        auto* detail = reinterpret_cast<SP_DEVICE_INTERFACE_DETAIL_DATA_W*>(buff.data());
+        detail -> cbSize =  buff_size;
+
+        success = SetupDiGetDeviceInterfaceDetailW(
+            *set,
+            &interface_data,
+            detail,
+            0,
+            &buff_size,
+            nullptr
+        );
+        last_error = GetLastError();
+        if(!success){
+            std::vector<std::string> supp_err_strings = {
+                std::format("GetLastError result: {}", last_error)
+            };
+            
+            return {
+                Error(
+                    ERR_HANDLING_FAILED_GET_DEV_IFACE_INFO,
+                    std::make_unique<std::vector<std::string>>(std::move(supp_err_strings))
+                ),
+                nullptr
+            };
+        }//end i
+        
+    }
 
     public:
-    Device(){
-        this -> interface_data = nullptr;
-        this -> interface_data_set = false;
+    Device(HDEVINFO set, SP_DEVICE_INTERFACE_DATA interface_data){
+        this -> set = set;
+        this -> interface_data = interface_data:
 
-        this -> device_instance = nullptr;
-        this -> device_instance_set = false;
-
-        this -> instance_path = nullptr;
-        this -> instance_path_size = 0;
-        this -> instance_path_set = false;
-    
     };
 
     Device(const Device& righty);

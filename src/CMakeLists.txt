@@ -2,6 +2,8 @@ if(WIN32)
     add_library(get_cameras_internal
         "${CMAKE_CURRENT_LIST_DIR}/Windows/get_cameras_windows.cc"
         "${CMAKE_CURRENT_LIST_DIR}/Windows/err_handling.cc"
+        "${CMAKE_CURRENT_LIST_DIR}/Windows/exceptions.cc"
+        "${CMAKE_CURRENT_LIST_DIR}/exceptions.cc"
         "${CMAKE_CURRENT_LIST_DIR}/err_handling.cc"
     )
 

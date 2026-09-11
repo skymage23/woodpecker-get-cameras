@@ -53,4 +53,11 @@ static std::map<unsigned int, std::string> get_err_string_map(){
 
 static std::map<unsigned int, std::string> err_string_map = get_err_string_map();
 
+[[noreturn]] static void out_of_memory()
+{
+     std::cerr << "Out of memory. Exiting now" << "\n";
+     std::exit(1);
+}
+
+
 #endif
